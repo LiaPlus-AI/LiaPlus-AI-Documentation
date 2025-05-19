@@ -27,7 +27,7 @@ jobs:
             const hasScreenshot = /!\[.*\]\([^)]+\.(png|jpg|jpeg|gif)(\?[^)]*)?\)/i.test(body);
             const hasScreenshot1 = /!\[.*\]\((https?:\/\/[^)]+)\)/i.test(body);
             const hasVideo = /(loom\.com|\.mp4|\.webm)/i.test(body);
-            const isVisualProofAttached = hasScreenshot || hasVideo || hasScreenshot;
+            const isVisualProofAttached = hasScreenshot || hasVideo || hasScreenshot1;
 
             let messages = [];
 
