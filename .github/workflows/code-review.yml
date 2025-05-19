@@ -1,0 +1,68 @@
+name: Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+
+jobs:
+  code_review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.head_ref }}
+
+      - name: 🔃 Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - name: 🧰 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install Node.js dependencies
+        run: npm install
+
+      - name: 📦 Install Python dependencies
+        run: pip install openai requests
+
+      - name: 📦 Install GitHub CLI
+        run: sudo apt update && sudo apt install -y gh
+
+      - name: 🤖 Run AI Code Review Script
+        run: python .github/scripts/ai_code_review.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+
+      - name: 💬 Post AI Summary as PR Comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "📢 Posting AI summary comment..."
+          if [ -f ai_review_comments.json ]; then
+            SUMMARY=$(jq -r '.summary' ai_review_comments.json)
+            gh pr comment ${{ github.event.pull_request.number }} --body "$SUMMARY"
+          else
+            echo "⚠️ ai_review_comments.json not found. Skipping summary comment."
+          fi
+
+      - name: 🧠 Submit AI Inline Review via GitHub API
+        run: python .github/scripts/submit_review.py
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
