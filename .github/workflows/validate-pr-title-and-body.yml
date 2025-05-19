@@ -28,7 +28,9 @@ jobs:
             const hasScreenshot1 = /!\[.*\]\((https?:\/\/[^)]+)\)/i.test(body);
             const hasVideo = /(loom\.com|youtube\.com|youtu\.be|vimeo\.com|\.mp4|\.webm)/i.test(body);
             const hasVideo1 = /!\[.*\]\((https?:\/\/[^)]+)\)/i.test(body) || /(loom\.com|youtube\.com|youtu\.be|vimeo\.com|\.mp4|\.webm)/i.test(body);
-            const isVisualProofAttached = hasScreenshot || hasVideo || hasScreenshot1 || hasVideo1;
+            const githubAttachmentRegex = /https:\/\/github\.com\/user-attachments\/assets\/[a-zA-Z0-9\-]+/i;
+            const markdownAttachmentRegex = /!\[.*\]\((https?:\/\/[^)]+)\)/i;
+            const isVisualProofAttached = hasScreenshot || hasVideo || hasScreenshot1 || hasVideo1 || githubAttachmentRegex || markdownAttachmentRegex;
 
             let messages = [];
 
