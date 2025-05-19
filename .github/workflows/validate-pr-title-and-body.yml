@@ -24,7 +24,7 @@ jobs:
             // Must match exactly one LIA-XXXX
             const ticketMatches = title.match(/LIA-\d+/g) || [];
             const isTitleValid = ticketMatches.length === 1;
-            const hasScreenshot = /!\[.*\]\(.*\.(png|jpg|jpeg|gif)\)/i.test(body);
+            const hasScreenshot = /!\[.*\]\([^)]+\.(png|jpg|jpeg|gif)(\?[^)]*)?\)/i.test(body);
             const hasVideo = /(loom\.com|\.mp4|\.webm)/i.test(body);
             const isVisualProofAttached = hasScreenshot || hasVideo;
 
